@@ -1,158 +1,318 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f8f9fc;
+}
+
+.play-container {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 240px;
+    background-color: #ffffff;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #e0e0e0;
+}
+
+.sidebar .logo {
+    font-size: 20px;
+    font-weight: bold;
+    color: #5b21b6;
+    margin-bottom: 30px;
+}
+
+.sidebar .menu ul,
+.sidebar .friends ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar li {
+    margin: 12px 0;
+    color: #555;
+    cursor: pointer;
+}
+
+.sidebar li.active {
+    color: #5b21b6;
+    font-weight: bold;
+}
+
+/* MAIN GAME AREA */
+.play-main {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: #e6fff5;
+    overflow: hidden;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+.game-header img {
+    height: 24px;
+}
+
+.avatar img {
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+}
+
+.game-scene {
+    flex: 1;
+    position: relative;
+    background: url('img/NEN.png') no-repeat center center;
+    background-size: cover;
+    margin-top: 50px;
+    overflow: hidden;
+}
+
+.bunny, .carrot, .shadow {
+    position: absolute;
+    bottom: 100px;
+    transition: left 0.5s ease-in-out;
+}
+
+.bunny {
+    left: 100px;
+    width: 120px;
+}
+
+.shadow {
+    bottom: 90px;
+    left: 110px;
+    width: 80px;
+}
+
+.carrot {
+    left: 240px;
+    width: 60px;
+}
+
+.bunny img, .carrot img, .shadow img {
+    width: 100%;
+    height: auto;
+}
+
+/* QUESTION ZONE */
+.question-box {
+    background: #512c19;
+    color: white;
+    padding: 30px;
+    text-align: center;
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+}
+
+.progress {
+    font-size: 14px;
+    margin-bottom: 10px;
+    background: #7b3f2a;
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: bold;
+}
+
+.pinyin {
+    position: relative;
+    width: 320px;
+    height: 100px;
+    margin: 0 auto 20px;
+}
+
+.pinyin img {
+    width: 100%;
+}
+
+.pinyin .text {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 28px;
+    font-weight: bold;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.choices {
+    display: grid;
+    grid-template-columns: repeat(2, 180px);
+    gap: 20px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.choice {
+    position: relative;
+    width: 180px;
+    height: 70px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.choice:hover {
+    transform: scale(1.05);
+}
+
+.choice img {
+    width: 100%;
+    height: 100%;
+}
+
+.choice span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
+    color: #4b330c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+/* Animation */
+.shake {
+    animation: shake 0.3s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+</style>
 <html>
 <head>
-    <title>HSK Game - Play</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #dffaf3;
-            margin: 0;
-            font-family: 'Segoe UI', sans-serif;
+    <title>Play Game</title>
+    <script>
+        let score = ${score};
+        let lives = ${lives};
+        const correctAnswer = "${question.correctAnswer}";
+
+        function checkAnswer(el, ans) {
+            if (ans === correctAnswer) {
+                document.querySelector(".bunny img").style.left = "240px";
+                setTimeout(() => {
+                    window.location.href = "play?next=true";
+                }, 800);
+            } else {
+                lives--;
+                updateHearts();
+                el.classList.add("shake");
+                setTimeout(() => el.classList.remove("shake"), 400);
+                if (lives <= 0) {
+                    setTimeout(() => {
+                        alert("💔 Bạn đã hết tim! Điểm: " + score);
+                        window.location.href = "play?restart=true";
+                    }, 400);
+                }
+            }
         }
 
-        .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #aef0c9;
-            font-weight: bold;
+        function updateHearts() {
+            const heartEl = document.getElementById("hearts");
+            heartEl.innerHTML = "";
+            for (let i = 0; i < lives; i++) heartEl.innerHTML += "❤️";
+            for (let i = 0; i < 3 - lives; i++) heartEl.innerHTML += "🤍";
         }
 
-        .game-area {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background-image: url('img/bg_gameplay.png');
-            background-size: cover;
-            background-position: center;
-            overflow: hidden;
-        }
-
-        .avatar {
-            width: 90px;
-            height: 90px;
-            border-radius: 10px;
-            border: 3px solid #fff;
-            background-color: #ffe6cc;
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
-        }
-
-        .bunny {
-            position: absolute;
-            width: 120px;
-            height: auto;
-            bottom: 15px;
-            left: 30px;
-            animation: jump 0.8s infinite alternate;
-            z-index: 1;
-        }
-
-        .carrot {
-            position: absolute;
-            width: 50px;
-            bottom: 40px;
-            left: 150px;
-            animation: floatCarrot 1.2s ease-in-out infinite;
-        }
-
-        @keyframes jump {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(-12px); }
-        }
-
-        @keyframes floatCarrot {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-
-        .word-box {
-            background-color: #6a4e42;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 20px 20px 0 0;
-        }
-
-        .word-box h4 {
-            background-color: orange;
-            padding: 10px 18px;
-            border-radius: 12px;
-            display: inline-block;
-            color: #fff;
-            font-size: 24px;
-        }
-
-        .choices {
-            background-color: #6a4e42;
-            padding: 20px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            border-radius: 0 0 20px 20px;
-        }
-
-        .choice-btn {
-            background-color: #fcebd6;
-            border: none;
-            padding: 18px;
-            font-size: 20px;
-            border-radius: 12px;
-            font-weight: bold;
-            transition: background-color 0.2s ease;
-        }
-
-        .choice-btn:hover {
-            background-color: #ffe4b3;
-        }
-    </style>
+        window.onload = updateHearts;
+    </script>
 </head>
 <body>
-
-<!-- Top bar -->
-<div class="top-bar">
-    <div>
-        Điểm: <span class="text-danger fw-bold">12 🥕</span>
-        &nbsp; ❤️❤️🤍
+<div class="play-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="logo">🌟 COURUSE</div>
+        <div class="menu">
+            <h4>OVERVIEW</h4>
+            <ul>
+                <li class="active">Dashboard</li>
+                <li>Inbox</li>
+                <li>Lesson</li>
+                <li>Task</li>
+                <li>Group</li>
+            </ul>
+        </div>
+        <div class="friends">
+            <h4>FRIENDS</h4>
+            <ul>
+                <li>👤 Prashant - Dev</li>
+                <li>👤 Prashant - Dev</li>
+                <li>👤 Prashant - Dev</li>
+            </ul>
+        </div>
     </div>
-    <div>
-        <button class="btn btn-light" onclick="pauseGame()">⏸️</button>
+
+    <!-- MAIN GAME -->
+    <div class="play-main">
+        <!-- Header -->
+        <div class="game-header">
+            <div class="score">Điểm: <span>${score}</span> 🥕</div>
+            <div id="hearts"></div>
+            <div class="avatar"><img src="img/avatar.png" alt="Avatar"></div>
+        </div>
+
+        <!-- Scene -->
+        <div class="game-scene">
+            <div class="shadow"><img src="img/shadow.png" /></div>
+            <div class="carrot"><img src="img/Carot.png" /></div>
+            <div class="bunny"><img src="img/tho 1.png" /></div>
+        </div>
+
+        <!-- Questions -->
+        <div class="question-box">
+            <div class="progress">${questionIndex}/12</div>
+
+            <div class="pinyin">
+                <img src="img/Frame.png" />
+                <div class="text">${question.pinyin}</div>
+            </div>
+
+            <div class="choices">
+                <c:forEach var="choice" items="${question.choices}">
+                    <div class="choice" onclick="checkAnswer(this, '${choice}')">
+                        <img src="img/Answer1.png" />
+                        <span>${choice}</span>
+                    </div>
+                </c:forEach>
+            </div>
+        </div>
     </div>
 </div>
-
-<!-- Game area -->
-<div class="game-area">
-    <img src="img/avatar_sample.png" class="avatar" alt="Avatar">
-    <img src="img/bunny_large.png" class="bunny" alt="Bunny">
-    <img src="img/bunnyaction.png" class="carrot" alt="Carrot">
-</div>
-
-<!-- Word box -->
-<div class="word-box">
-    <div>1/12</div>
-    <h4>/dà/</h4>
-</div>
-
-<!-- Answer choices -->
-<div class="choices">
-    <button class="choice-btn">神谢</button>
-    <button class="choice-btn">保</button>
-    <button class="choice-btn">北</button>
-    <button class="choice-btn">雲</button>
-</div>
-
-<script>
-    function pauseGame() {
-        alert("Game paused");
-    }
-</script>
-
 </body>
 </html>
