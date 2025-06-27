@@ -1,318 +1,301 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ page import="model.Question" %>
+
+<%
+     Question q = (Question) request.getAttribute("question");
+    int score = request.getAttribute("score") != null ? (Integer) request.getAttribute("score") : 0;
+    int lives = request.getAttribute("lives") != null ? (Integer) request.getAttribute("lives") : 3;
+    int bunnyPos = request.getAttribute("bunnyPos") != null ? (Integer) request.getAttribute("bunnyPos") : 100;
+    int carrotPos = bunnyPos + 120;
+    String correctAnswer = (String) request.getAttribute("correctAnswer");
+%>
+
 <!DOCTYPE html>
-<style>
-body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #f8f9fc;
-}
-
-.play-container {
-    display: flex;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-
-/* SIDEBAR */
-.sidebar {
-    width: 240px;
-    background-color: #ffffff;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    border-right: 1px solid #e0e0e0;
-}
-
-.sidebar .logo {
-    font-size: 20px;
-    font-weight: bold;
-    color: #5b21b6;
-    margin-bottom: 30px;
-}
-
-.sidebar .menu ul,
-.sidebar .friends ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-.sidebar li {
-    margin: 12px 0;
-    color: #555;
-    cursor: pointer;
-}
-
-.sidebar li.active {
-    color: #5b21b6;
-    font-weight: bold;
-}
-
-/* MAIN GAME AREA */
-.play-main {
-    flex: 1;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    background: #e6fff5;
-    overflow: hidden;
-}
-
-.game-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 20px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 10;
-}
-
-.game-header img {
-    height: 24px;
-}
-
-.avatar img {
-    height: 70px;
-    border-radius: 50%;
-    border: 2px solid #fff;
-}
-
-.game-scene {
-    flex: 1;
-    position: relative;
-    background: url('img/NEN.png') no-repeat center center;
-    background-size: cover;
-    margin-top: 50px;
-    overflow: hidden;
-}
-
-.bunny, .carrot, .shadow {
-    position: absolute;
-    bottom: 100px;
-    transition: left 0.5s ease-in-out;
-}
-
-.bunny {
-    left: 100px;
-    width: 120px;
-}
-
-.shadow {
-    bottom: 90px;
-    left: 110px;
-    width: 80px;
-}
-
-.carrot {
-    left: 240px;
-    width: 60px;
-}
-
-.bunny img, .carrot img, .shadow img {
-    width: 100%;
-    height: auto;
-}
-
-/* QUESTION ZONE */
-.question-box {
-    background: #512c19;
-    color: white;
-    padding: 30px;
-    text-align: center;
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-}
-
-.progress {
-    font-size: 14px;
-    margin-bottom: 10px;
-    background: #7b3f2a;
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-weight: bold;
-}
-
-.pinyin {
-    position: relative;
-    width: 320px;
-    height: 100px;
-    margin: 0 auto 20px;
-}
-
-.pinyin img {
-    width: 100%;
-}
-
-.pinyin .text {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    font-size: 28px;
-    font-weight: bold;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.choices {
-    display: grid;
-    grid-template-columns: repeat(2, 180px);
-    gap: 20px;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-.choice {
-    position: relative;
-    width: 180px;
-    height: 70px;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.choice:hover {
-    transform: scale(1.05);
-}
-
-.choice img {
-    width: 100%;
-    height: 100%;
-}
-
-.choice span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    font-size: 24px;
-    color: #4b330c;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-}
-
-/* Animation */
-.shake {
-    animation: shake 0.3s;
-}
-
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
-    100% { transform: translateX(0); }
-}
-</style>
 <html>
-<head>
-    <title>Play Game</title>
-    <script>
-        let score = ${score};
-        let lives = ${lives};
-        const correctAnswer = "${question.correctAnswer}";
+    <head>
+        <title>HSK Game - Play</title>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                margin: 0;
+                padding: 0;
+                font-family: Arial, sans-serif;
+                background: #e6fff5;
+            }
 
-        function checkAnswer(el, ans) {
-            if (ans === correctAnswer) {
-                document.querySelector(".bunny img").style.left = "240px";
-                setTimeout(() => {
-                    window.location.href = "play?next=true";
-                }, 800);
-            } else {
-                lives--;
-                updateHearts();
-                el.classList.add("shake");
-                setTimeout(() => el.classList.remove("shake"), 400);
-                if (lives <= 0) {
-                    setTimeout(() => {
-                        alert("💔 Bạn đã hết tim! Điểm: " + score);
-                        window.location.href = "play?restart=true";
-                    }, 400);
+            .play-container {
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                color: #f8eacc;
+                position: relative;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 6px 15px;
+                background: #fff;
+                font-size: 16px;
+                height: 40px;
+                box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+                position: absolute;
+                top: 10px; /* cách mép trên một chút */
+                left: 0;
+                right: 0;
+                background: transparent; /* Trong suốt để thấy ảnh nền */
+                justify-content: space-between;
+                z-index: 10;
+            }
+
+            .header-section {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                color: #e74c3c;
+                font-size: 25px;
+            }
+            .header-right {
+                display: flex;
+                gap: 20px;
+                align-items: center;
+                margin-left: auto;
+            }
+            .back-btn {
+                background-color: transparent;
+                border: none;
+                color: #333;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+            }
+
+            .back-btn:hover {
+                color: #007bff;
+            }
+
+            .game-scene {
+                flex: 1;
+                background: url('img/NEN.png') no-repeat center;
+                background-size: cover;
+                position: relative;
+                margin-top: 0;
+            }
+
+            .bunny, .carrot {
+                position: absolute;
+                bottom: 100px;
+                transition: left 0.5s ease;
+            }
+
+            .bunny {
+                left: 100px;
+                width: 100px;
+            }
+
+            .carrot {
+                left: 240px;
+                width: 60px;
+            }
+
+            .bunny img, .carrot img {
+                width: 100%;
+            }
+
+            .question-box {
+                background: #512c19;
+                color: white;
+                padding: 5px;
+                text-align: center;
+                font-size: 20px;
+            }
+
+            .question-image {
+                max-width: 150px;
+                max-height: 100px;
+                margin-top: 10px;
+                margin-bottom: 15px;
+                border: 4px solid #c68c53;         /* màu nâu viền khung */
+                border-radius: 12px;               /* bo góc */
+                background-color: #fdf0dc;         /* nền giấy nhẹ */
+                padding: 6px;
+                box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.1);  /* bóng nhẹ */
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .choices {
+                display: grid;
+                grid-template-columns: repeat(2, 300px);
+                gap: 10px;
+                justify-content: center;
+                margin-top: 10px;
+            }
+
+            .choice {
+                background: #fff;
+                color: #000;
+                border-radius: 10px;
+                padding: 20px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: transform 0.2s;
+                font-size: 16px;
+            }
+
+            .choice:hover {
+                transform: scale(1.05);
+            }
+
+            .shake {
+                animation: shake 0.3s;
+            }
+
+            @keyframes shake {
+                0%, 100% {
+                    transform: translateX(0);
+                }
+                25% {
+                    transform: translateX(-5px);
+                }
+                50% {
+                    transform: translateX(5px);
+                }
+                75% {
+                    transform: translateX(-5px);
                 }
             }
-        }
+        </style>
+    </head>
+    <body>
+        <div class="play-container">
 
-        function updateHearts() {
-            const heartEl = document.getElementById("hearts");
-            heartEl.innerHTML = "";
-            for (let i = 0; i < lives; i++) heartEl.innerHTML += "❤️";
-            for (let i = 0; i < 3 - lives; i++) heartEl.innerHTML += "🤍";
-        }
-
-        window.onload = updateHearts;
-    </script>
-</head>
-<body>
-<div class="play-container">
-    <!-- SIDEBAR -->
-    <div class="sidebar">
-        <div class="logo">🌟 COURUSE</div>
-        <div class="menu">
-            <h4>OVERVIEW</h4>
-            <ul>
-                <li class="active">Dashboard</li>
-                <li>Inbox</li>
-                <li>Lesson</li>
-                <li>Task</li>
-                <li>Group</li>
-            </ul>
-        </div>
-        <div class="friends">
-            <h4>FRIENDS</h4>
-            <ul>
-                <li>👤 Prashant - Dev</li>
-                <li>👤 Prashant - Dev</li>
-                <li>👤 Prashant - Dev</li>
-            </ul>
-        </div>
-    </div>
-
-    <!-- MAIN GAME -->
-    <div class="play-main">
-        <!-- Header -->
-        <div class="game-header">
-            <div class="score">Điểm: <span>${score}</span> 🥕</div>
-            <div id="hearts"></div>
-            <div class="avatar"><img src="img/avatar.png" alt="Avatar"></div>
-        </div>
-
-        <!-- Scene -->
-        <div class="game-scene">
-            <div class="shadow"><img src="img/shadow.png" /></div>
-            <div class="carrot"><img src="img/Carot.png" /></div>
-            <div class="bunny"><img src="img/tho 1.png" /></div>
-        </div>
-
-        <!-- Questions -->
-        <div class="question-box">
-            <div class="progress">${questionIndex}/12</div>
-
-            <div class="pinyin">
-                <img src="img/Frame.png" />
-                <div class="text">${question.pinyin}</div>
-            </div>
-
-            <div class="choices">
-                <c:forEach var="choice" items="${question.choices}">
-                    <div class="choice" onclick="checkAnswer(this, '${choice}')">
-                        <img src="img/Answer1.png" />
-                        <span>${choice}</span>
+            <!-- Gộp điểm - tim - quay lại vào cùng hàng -->
+            <div class="header">
+                <a href="choosescreen.jsp" class="back-button">
+                    <img src="img/back-icon.png" alt="Back" />
+                </a>
+                <div class="header-right">
+                    <div class="header-section">
+                        Điểm:
+                        <img src="img/carrot.png" alt="carrot" style="width: 24px; margin: 0 6px;" />
+                        <span id="score"><%= score %></span>
                     </div>
-                </c:forEach>
+                    <div class="header-section" id="hearts"></div>
+                    <div class="header-section">
+
+                    </div>
+                </div>
+            </div>
+            <!-- SCENE: Bunny + Carrot -->
+            <div class="game-scene">
+                <div class="carrot" id="carrot" style="left: <%= carrotPos %>px;"><img src="img/Carot.png" alt="carrot" /></div>
+                <div class="bunny" id="bunny" style="left: <%= bunnyPos %>px;"><img src="img/tho 1.png" alt="bunny" /></div>
+            </div>
+
+            <!-- QUESTION + ANSWERS -->
+            <div class="question-box">
+                <% if (q != null) { %>
+                <p><strong>Câu hỏi:</strong> <%= q.getContent() %></p>
+
+                <c:if test="${not empty question.imageUrl}">
+                    <div style="text-align: center;">
+                        <img class="question-image" src="img/${question.imageUrl}" alt="question image" />
+                    </div>
+                </c:if>
+
+                <div class="choices">
+                    <c:forEach var="a" items="${question.answers}">
+                        <div class="choice" onclick="checkAnswer(this, '${a.content}')">${a.content}</div>
+                    </c:forEach>
+                </div>
+                <% } else { %>
+                <p style="color: red;">❌ Không có dữ liệu câu hỏi. Vui lòng <a href="play">thử lại</a>.</p>
+                <% } %>
             </div>
         </div>
-    </div>
-</div>
-</body>
+
+        <!-- SCRIPT -->
+        <script>
+            const initialLives = <%= lives %>; // lives từ server
+            let lives = initialLives;
+            const bookId = <%= request.getAttribute("bookId") %>;
+            const levelNumber = <%= request.getAttribute("level") %>;
+
+            let score = <%= score %>;
+
+            let bunnyPos = <%= bunnyPos %>;
+            const correctAnswer = "<%= correctAnswer != null ? correctAnswer : "" %>";
+            const currentId = <%= request.getAttribute("currentId") %>;
+            function checkAnswer(el, ans) {
+                if (lives <= 0)
+                    return;
+
+                if (ans === correctAnswer) {
+                    const bunny = document.getElementById("bunny");
+                    const newPos = bunnyPos + 120;
+                    bunny.style.left = newPos + "px";
+
+                    setTimeout(() => {
+                        fetch(`checkquestion?bookId=${bookId}&level=${levelNumber}&currentId=${currentId}`)
+                                .then(res => res.text())
+                                .then(hasNext => {
+                                    if (hasNext === "no") {
+                                        // Hoàn thành level
+                                        window.location.href = "complete.jsp?score=" + (score + 1) +
+                                                "&lives=" + lives +
+                                                "&bunnyPos=" + newPos;
+                                    } else {
+                                        // Sang câu tiếp theo trong cùng level
+                                        window.location.href = "play?bookId=" + bookId +
+                                                "&level=" + levelNumber +
+                                                "&currentId=" + (currentId + 1) +
+                                                "&score=" + (score + 1) +
+                                                "&lives=" + lives +
+                                                "&bunnyPos=" + newPos;
+                                    }
+                                });
+                    }, 800);
+                } else {
+                    const isNewLevel = false;
+                    lives--;
+                    updateHearts();
+                    el.classList.add("shake");
+                    setTimeout(() => el.classList.remove("shake"), 400);
+
+                    if (lives <= 0) {
+                        setTimeout(() => {
+                            window.location.href = "complete.jsp?score=" + score +
+                                    "&lives=" + lives +
+                                    "&bunnyPos=" + bunnyPos;
+                        }, 500);
+                    }
+                }
+            }
+
+            function updateHearts() {
+                const heartEl = document.getElementById("hearts");
+                heartEl.innerHTML = "";
+
+                for (let i = 0; i < lives; i++) {
+                    heartEl.innerHTML += '<img src="img/tymdo.png" alt="❤️" style="width: 28px; margin-right: 5px;" />';
+                }
+
+                for (let i = 0; i < 3 - lives; i++) {
+                    heartEl.innerHTML += '<img src="img/tymden.png" alt="🤍" style="width: 28px; margin-right: 5px;" />';
+                }
+            }
+
+            window.onload = () => {
+                updateHearts();
+
+                document.querySelector(".carrot").style.left = (bunnyPos + 120) + "px";
+            };
+        </script>
+    </body>
 </html>

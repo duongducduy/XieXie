@@ -1,199 +1,152 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Chọn sách</title>
+    <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
     <style>
         body {
             margin: 0;
-            background-color: #fff7c2;;
+            background: #fff6ea;
             font-family: 'Segoe UI', sans-serif;
-            color: #5b4031;;
+            overflow-x: hidden;
         }
 
-        .header {
+        .top-bar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 15px 20px;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: transparent;
         }
 
         .back-btn {
-            background-color: #fff;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            background: none;
             border: none;
-            font-size: 18px;
+            font-size: 24px;
         }
 
-        .avatar-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .avatar-btn {
+        .top-bar img.user-avatar {
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            overflow: hidden;
-            border: 2px solid #fff;
+            cursor: pointer;
         }
 
-        .avatar-dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #fff;
-            min-width: 160px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-
-        .avatar-dropdown-content a {
-            color: black;
-            padding: 10px 14px;
-            display: block;
-            text-decoration: none;
-        }
-
-        .avatar-dropdown:hover .avatar-dropdown-content {
-            display: block;
-        }
-
-        .premium-box {
-            background-color: orange;
+        .premium-banner {
+            background-color: #f7931e;
             color: white;
-            padding: 15px 20px;
-            margin: 10px 20px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
+            padding: 16px;
+            text-align: center;
             font-weight: bold;
+            font-size: 18px;
+            border-radius: 12px;
+            margin: 0 40px 30px 40px;
+            cursor: pointer;
         }
 
-        .book-grid {
+        .books-container {
             display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            padding: 20px;
             justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
         }
 
         .book-card {
-            position: relative;
-            width: 150px;
-            height: 200px;
-            border-radius: 18px;
-            overflow: hidden;
+            text-align: center;
             cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .book-card:hover {
+            transform: scale(1.05);
         }
 
         .book-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .play-icon {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background-color: #00c2a8;
-            border-radius: 50%;
-            padding: 10px;
-            color: white;
+            width: 100px;
         }
 
         .book-title {
-            text-align: center;
-            margin-top: 5px;
-            font-weight: bold;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        .book-desc {
+            font-size: 14px;
+            color: gray;
         }
 
         .bottom-nav {
             position: fixed;
             bottom: 0;
+            left: 0;
             width: 100%;
-            background-color: #fef9f4;
-            padding: 10px 0;
+            background-color: #f8eacc;
             display: flex;
-            justify-content: space-around;
-            border-top-left-radius: 30px;
-            border-top-right-radius: 30px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            justify-content: center;
+            gap: 20px;
+            padding: 10px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
         }
 
         .bottom-nav button {
+            background-color: #d2b48c;
             border: none;
-            background: none;
+            border-radius: 20px;
+            padding: 10px 30px;
             font-weight: bold;
-            font-size: 16px;
-            color: #333;
+            color: white;
+        }
+
+        .bottom-nav button.active {
+            background-color: #a67c52;
         }
     </style>
 </head>
 <body>
+<div class="top-bar">
+<a href="dashboard.jsp" class="back-button">
+    <img src="img/back-icon.png" alt="Back" />
+  </a>
+    <h5 style="margin: 0; font-weight: bold;">CHỌN SÁCH</h5>
+    <img src="images/avatar.png" class="user-avatar" onclick="location.href='profile.jsp'"/>
+</div>
 
-<!-- Header -->
-<div class="header">
-    <button class="back-btn" onclick="location.href='login.jsp'">
-        <i class="fas fa-arrow-left"></i>
-    </button>
+<div class="premium-banner" onclick="location.href='choosepack.jsp'">
+    🌟 NÂNG CẤP PREMIUM <br/> Mở khóa tất cả các bài học và tính năng
+</div>
 
-    <h4 class="m-0" style="color: #5b4031;">CHỌN SÁCH</h4>
-
-    <div class="avatar-dropdown">
-        <img src="img/avatar.jpg" alt="Avatar" class="avatar-btn">
-        <div class="avatar-dropdown-content">
-            <a href="#">👤 View Profile</a>
-            <a href="#">✏️ Edit Info</a>
-            <a href="#">⚙️ Settings</a>
-            <a href="#">🚪 Logout</a>
-        </div>
+<div class="books-container">
+    <div class="book-card" onclick="location.href='choosescreen.jsp?level=1'">
+        <img src="img/hsk11.png" alt="HSK 1">
+        <div class="book-title">Giáo trình HSK 1</div>
+        <div class="book-desc">150 từ vựng</div>
+    </div>
+    <div class="book-card" onclick="location.href='play.jsp?level=2'">
+        <img src="img/hsk12.png" alt="HSK 2">
+        <div class="book-title">Giáo trình HSK 2</div>
+        <div class="book-desc">150 từ vựng</div>
+    </div>
+    <div class="book-card" onclick="location.href='play.jsp?level=3'">
+        <img src="img/hsk13.png" alt="HSK 3">
+        <div class="book-title">Giáo trình HSK 3</div>
+        <div class="book-desc">150 từ vựng</div>
+    </div>
+    <div class="book-card" onclick="location.href='play.jsp?level=4'">
+        <img src="img/hsk14.png" alt="HSK 4">
+        <div class="book-title">Giáo trình HSK 4</div>
+        <div class="book-desc">150 từ vựng</div>
     </div>
 </div>
 
-<!-- Premium Box -->
-<div class="premium-box">
-    <img src="img/bunny.png" width="32" height="32">
-    <div>
-        <div>Nâng cấp Premium</div>
-        <small>Mở khóa tất cả các bài học và tính năng</small>
-    </div>
-</div>
-
-<!-- Book Cards -->
-<div class="book-grid">
-    <div class="book-card" onclick="location.href='hsk1.jsp'">
-        <img src="img/HSK1.png" alt="HSK 1">
-        <div class="play-icon"><i class="fas fa-play"></i></div>
-    </div>
-    <div class="book-title text-white"></div>
-
-    <div class="book-card">
-        <img src="img/hsk2.jpg" alt="HSK 2" style="opacity: 0.5;">
-        <div class="play-icon"><i class="fas fa-lock"></i></div>
-    </div>
-    <div class="book-title text-white"></div>
-
-    <div class="book-card">
-        <img src="img/hsk3.jpg" alt="HSK 3" style="opacity: 0.5;">
-        <div class="play-icon"><i class="fas fa-lock"></i></div>
-    </div>
-    <div class="book-title text-white"></div>
-</div>
-
-<!-- Bottom Navigation -->
 <div class="bottom-nav">
-    <button onclick="location.href='home.jsp'"><i class="fas fa-home"></i> HOME</button>
-    <button onclick="location.href='ranking.jsp'"><i class="fas fa-chart-line"></i> RANKING</button>
+    <button class="active" onclick="location.href='dashboard.jsp'"><i class="fas fa-home me-2"></i> HOME</button>
+     <button class="active" onclick="location.href='settings.jsp'"><i class="fas fa-cog me-2"></i> CÀI ĐẶT</button>
+      <button class="active" onclick="location.href='ranking.jsp'"><i class="fas fa-trophy me-2"></i> XẾP HẠNG</button>
+  
 </div>
-
 </body>
 </html>

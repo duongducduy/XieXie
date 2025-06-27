@@ -4,16 +4,36 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/E:/XieXie/XieXie/web/choosescreen.jsp</file>
-            <file>file:/E:/XieXie/XieXie/web/play.jsp</file>
-            <file>file:/E:/XieXie/XieXie/web/img/Frame%2028.png</file>
-            <file>file:/E:/XieXie/XieXie/web/img/Health%20Container.png</file>
+            <file>file:/E:/XieXie/XieXie/src/java/controller/Play.java</file>
+            <file>file:/E:/XieXie/XieXie/nbproject/build-impl.xml~</file>
+            <file>file:/E:/XieXie/XieXie/web/choosepack.jsp</file>
+            <file>file:/E:/XieXie/XieXie/web/payment.jsp</file>
+            <file>file:/E:/XieXie/XieXie/src/java/util/GoogleUtils.java</file>
             <file>file:/E:/XieXie/XieXie/web/index.html</file>
+            <file>file:/E:/XieXie/XieXie/src/java/model/Question.java</file>
+            <file>file:/E:/XieXie/XieXie/src/java/dal/UserDAO.java</file>
+            <file>file:/E:/XieXie/XieXie/src/java/model/Users.java</file>
+            <file>file:/E:/XieXie/XieXie/src/java/dal/DBContext.java</file>
+            <file>file:/E:/XieXie/XieXie/web/task.jsp</file>
             <file>file:/E:/XieXie/XieXie/web/choosebook.jsp</file>
+            <file>file:/E:/XieXie/XieXie/web/ranking.jsp</file>
+            <file>file:/E:/XieXie/XieXie/src/java/controller/LoginController.java</file>
+            <file>file:/E:/XieXie/XieXie/web/img/carrot.png</file>
+            <file>file:/E:/XieXie/XieXie/nbproject/build-impl.xml</file>
+            <file>file:/E:/XieXie/XieXie/src/java/controller/PaymentController.java</file>
+            <file>file:/E:/XieXie/XieXie/src/java/controller/LogoutController.java</file>
+            <file>file:/E:/XieXie/XieXie/src/java/controller/TaskController.java</file>
+            <file>file:/E:/XieXie/XieXie/web/play.jsp</file>
+            <file>file:/E:/XieXie/XieXie/src/java/constant/IConstant.java</file>
+            <file>file:/E:/XieXie/XieXie/src/java/controller/LoginGoogleController.java</file>
             <file>file:/E:/XieXie/XieXie/web/css/style.css</file>
-            <file>file:/E:/XieXie/XieXie/web/img/Frame%2048.png</file>
-            <file>file:/E:/XieXie/XieXie/web/css/play.jsp</file>
+            <file>file:/E:/XieXie/XieXie/web/WEB-INF/web.xml</file>
+            <file>file:/E:/XieXie/XieXie/src/java/dal/QuestionDAO.java</file>
             <file>file:/E:/XieXie/XieXie/web/login.jsp</file>
-            <file>file:/E:/XieXie/XieXie/web/img/NEN%201.png</file>
+            <file>file:/E:/XieXie/XieXie/web/index.jsp</file>
+            <file>file:/E:/XieXie/XieXie/web/complete.jsp</file>
+            <file>file:/E:/XieXie/XieXie/src/java/controller/CheckQuestionController.java</file>
+            <file>file:/E:/XieXie/XieXie/web/dashboard.jsp</file>
         </group>
     </open-files>
 </project-private>

@@ -6,371 +6,285 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
-<html lang="en">
-      <style>
-    body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fc;
-}
+<%@ page import="model.Users" %>
+<%
+    Users u = (Users) session.getAttribute("USER");
+    if (u == null) {
+        response.sendRedirect("login.jsp");
+        return;
+    }
+%>
+<html>
+    <head>
+        <title>Trang tổng quan</title>
+        <style>
 
-.container {
-    display: flex;
-    height: 100vh;
-    width: 100vw;
-    overflow: hidden;
-}
+            @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
 
-/* SIDEBAR */
-.sidebar {
-    width: 240px;
-    background-color: #ffffff;
-    padding: 20px;
-    border-right: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
+            body {
+                margin: 0;
+                font-family: 'Poppins', sans-serif;
+                background-color: #f9fafb;
+                font-size: 16px;
+            }
 
-.sidebar .logo {
-    font-size: 20px;
-    font-weight: bold;
-    color: #5b21b6;
-    margin-bottom: 30px;
-}
+            .container {
+                display: flex;
+                height: 100vh;
+            }
 
-.sidebar .menu ul,
-.sidebar .friends ul,
-.sidebar .settings ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+            /* ===== Sidebar ===== */
+            .sidebar {
+                width: 240px;
+                background-color: #f0ebd8;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+            }
 
-.sidebar li {
-    margin: 10px 0;
-    color: #555;
-    cursor: pointer;
-}
+            .logo img {
+                width: 40px;
+                height: 40px;
+            }
 
-.sidebar li.active {
-    color: #5b21b6;
-    font-weight: bold;
-}
+            .logo h2 {
+                font-size: 20px;
+                color: #6366f1;
+                margin-top: 10px;
+            }
 
-.sidebar .logout {
-    color: red;
-}
+            .menu ul {
+                list-style: none;
+                padding: 0;
+            }
 
-/* MAIN CONTENT */
-.main {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-}
+            .menu li {
+                padding: 14px 0;
+                cursor: pointer;
+                color: #333;
+                font-size: 17px;
+            }
 
-.search-bar input {
-    width: 100%;
-    padding: 10px 15px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-bottom: 20px;
-}
+            .menu li.active {
+                background-color: #e0e7ff;
+                border-radius: 6px;
+                padding-left: 10px;
+                font-weight: 600;
+            }
 
-.highlight-course {
-    background-color: #7c3aed;
-    color: white;
-    padding: 30px;
-    border-radius: 16px;
-    margin-bottom: 20px;
-    position: relative;
-}
+            .friends h3 {
+                margin-top: 30px;
+                font-size: 15px;
+                color: #444;
+            }
 
-.highlight-course button {
-    margin-top: 15px;
-    padding: 10px 20px;
-    background: white;
-    color: #7c3aed;
-    border: none;
-    border-radius: 20px;
-    font-weight: bold;
-    cursor: pointer;
-}
+            .friend-item {
+                display: flex;
+                align-items: center;
+                margin: 8px 0;
+            }
 
-.course-progress {
-    display: flex;
-    gap: 20px;
-    margin: 20px 0;
-}
+            .friend-item .avatar {
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                margin-right: 10px;
+            }
 
-.course-progress .item {
-    flex: 1;
-    background: white;
-    padding: 15px;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    text-align: center;
-    font-size: 14px;
-}
+            .friend-item .name {
+                font-size: 15px;
+                color: #333;
+            }
 
-.course-progress .item span {
-    font-weight: bold;
-    display: block;
-    margin-top: 8px;
-}
+            .settings {
+                margin-top: 20px;
+            }
 
-.continue-section h3 {
-    margin-top: 30px;
-    margin-bottom: 15px;
-    font-size: 20px;
-}
+            .logout {
+                color: red;
+                font-weight: bold;
+                text-decoration: none;
+                font-size: 16px;
+            }
 
-.course-grid {
-    display: flex;
-    gap: 20px;
-    flex-wrap: wrap;
-}
+            /* ===== Main Content ===== */
+            .main-content {
+                flex: 1;
+                padding: 30px;
+                overflow-y: auto;
+            }
 
-.card {
-    background: white;
-    border-radius: 12px;
-    padding: 15px;
-    width: 220px;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-    text-align: center;
-}
+            .search-bar {
+                display: flex;
+                gap: 10px;
+            }
 
-.card img {
-    width: 100%;
-    border-radius: 8px;
-    margin-bottom: 10px;
-}
+            .search-bar input {
+                flex: 1;
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid #ccc;
+                font-size: 16px;
+            }
 
-.card p {
-    font-weight: bold;
-    font-size: 14px;
-    margin: 10px 0 5px;
-}
+            /* ===== Banner - Horizontal Scroll ===== */
+            .banner {
+                overflow-x: auto;
+                white-space: nowrap;
+                scrollbar-width: none;
+                margin: 20px 0;
+            }
 
-.mentor-table {
-    margin-top: 30px;
-}
+            .banner::-webkit-scrollbar {
+                display: none;
+            }
 
-.mentor-table table {
-    width: 100%;
-    background: white;
-    border-collapse: collapse;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
-}
+            .banner-track {
+                display: flex;
+                gap: 20px;
+            }
 
-.mentor-table th, .mentor-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #f0f0f0;
-    font-size: 14px;
-}
+            .banner-track img {
+                width: 100%;
+                max-width: 700px;
+                height: auto;
+                border-radius: 12px;
+                flex-shrink: 0;
+            }
 
-.details {
-    background: #e0e7ff;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-    color: #3730a3;
-}
+            /* ===== Course Section ===== */
+            .continue-watching h3 {
+                margin-bottom: 15px;
+                font-size: 18px;
+            }
 
-/* PROFILE SIDEBAR */
-.profile-bar {
-    width: 250px;
-    background-color: #ffffff;
-    padding: 20px;
-    border-left: 1px solid #e0e0e0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+            /* ===== Courses ===== */
+            .courses {
+                display: flex;
+                gap: 20px;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                scrollbar-width: none;
+            }
 
-.profile-bar .profile img {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-}
+            .courses::-webkit-scrollbar {
+                display: none;
+            }
 
-.profile-bar .profile h4 {
-    margin: 5px 0;
-    font-size: 16px;
-}
+            /* ===== Course Card Small ===== */
+            .course-card {
+                min-width: 220px;
+                max-width: 300px;
+                background-color: #fff;
+                border-radius: 10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+                padding: 10px;
+                flex-shrink: 0;
+                font-size: 14px;
+                transition: transform 0.3s ease;
+            }
 
-.profile-bar .profile p {
-    font-size: 12px;
-    color: #666;
-    text-align: center;
-}
+            .course-card:hover {
+                transform: scale(1.05);
+            }
 
-.stats img {
-    width: 100%;
-    margin: 20px 0;
-}
+            .course-card img {
+                width: 100%;
+                height: auto;
+                object-fit: cover;
+                border-radius: 6px;
+                margin-bottom: 6px;
+            }
 
-.mentors p {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
+            .course-card p {
+                font-size: 15px;
+                margin: 4px 0;
+            }
 
-.mentors ul {
-    list-style: none;
-    padding: 0;
-    width: 100%;
-}
-
-.mentors li {
-    margin: 10px 0;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.see-all {
-    width: 100%;
-    padding: 8px;
-    background: #7c3aed;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-weight: bold;
-    cursor: pointer;
-}
-</style>
-<head>
-    <meta charset="UTF-8">
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="css/dashboard.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body>
-<div class="container">
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-        <div class="logo">COURSE</div>
-        <nav class="menu">
-            <ul>
-                <li class="active">Dashboard</li>
-                <li>Inbox</li>
-                <li>Lesson</li>
-                <li>Task</li>
-                <li>Group</li>
-            </ul>
-        </nav>
-        <div class="friends">
-            <p>FRIENDS</p>
-            <ul>
-                <li>Prashant<br><small>Software Developer</small></li>
-                <li>Prashant<br><small>Software Developer</small></li>
-                <li>Prashant<br><small>Software Developer</small></li>
-            </ul>
-        </div>
-        <div class="settings">
-            <p>SETTINGS</p>
-            <ul>
-                <li>Settings</li>
-                <li class="logout">Logout</li>
-            </ul>
-        </div>
-    </aside>
-
-    <!-- MAIN CONTENT -->
-    <main class="main">
-        <div class="search-bar">
-            <input type="text" placeholder="Search your course here..." />
-        </div>
-
-        <div class="highlight-course">
-            <div class="content">
-                <h2>Sharpen Your Skills With<br>Professional Online Courses</h2>
-                <button>Join Now</button>
-            </div>
-        </div>
-
-        <div class="course-progress">
-            <div class="item">2/8 Watched<br><span>Product Design</span></div>
-            <div class="item">2/8 Watched<br><span>Product Design</span></div>
-            <div class="item">2/8 Watched<br><span>Product Design</span></div>
-        </div>
-
-        <div class="continue-section">
-            <h3>Continue Watching</h3>
-            <div class="course-grid">
-                <div class="card">
-                    <img src="img/thumb1.png" alt="course" />
-                    <p>Beginner’s Guide To Becoming A Professional Frontend Developer</p>
-                    <small>Prashant Kumar Singh</small>
+            .course-card small {
+                font-size: 13px;
+                color: #555;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <aside class="sidebar">
+                <div class="logo">
+                    <img src="img/Logo.png" alt="logo" />
+                    <h2>KHÓA HỌC</h2>
                 </div>
-                <div class="card">
-                    <img src="img/thumb2.png" alt="course" />
-                    <p>How To Create Your Online Course Step 3</p>
-                    <small>Prashant Kumar Singh</small>
+                <nav class="menu">
+                    <ul>
+                        <li class="active">📊 Tổng quan</li>
+                        <li>📬 Hộp thư</li>
+                        <li onclick="location.href = 'choosebook.jsp'">📚 Bài học</li>
+                        <li onclick="location.href = 'task'">✅ Nhiệm vụ</li>
+                        <li>👥 Nhóm</li>
+                    </ul>
+                </nav>
+                <div class="friends">
+                    <h3>Bạn bè</h3>
+                    <ul>
+                        <li class="friend-item">
+                            <img src="img/Logo.png" alt="Lê Hữu Quý" class="avatar">
+                            <span class="name">Lê Hữu Quý</span>
+                        </li>
+                        <li class="friend-item">
+                            <img src="img/Logo.png" alt="Nguyễn Trung Thành" class="avatar">
+                            <span class="name">Nguyễn Trung Thành</span>
+                        </li>
+                    </ul>
                 </div>
-                <div class="card">
-                    <img src="img/thumb3.png" alt="course" />
-                    <p>Learn Software Development With Us!</p>
-                    <small>Prashant Kumar Singh</small>
+                <div class="settings">
+                    <p>⚙️ Cài đặt</p>
+                    <a href="logout" class="logout">🚪 Đăng xuất</a>
                 </div>
-            </div>
-        </div>
+            </aside>
 
-        <div class="mentor-table">
-            <h3>Your Mentor</h3>
-            <table>
-                <tr>
-                    <th>Name & Date</th>
-                    <th>Course Type</th>
-                    <th>Course Title</th>
-                    <th>Action</th>
-                </tr>
-                <tr>
-                    <td>Prashant Kumar Singh<br>25/2/2023</td>
-                    <td>FRONTEND</td>
-                    <td>Understanding Concept Of React</td>
-                    <td><button class="details">Show Details</button></td>
-                </tr>
-                <tr>
-                    <td>Ravi Kumar<br>25/2/2023</td>
-                    <td>FRONTEND</td>
-                    <td>Understanding Concept Of React</td>
-                    <td><button class="details">Show Details</button></td>
-                </tr>
-            </table>
-        </div>
-    </main>
+            <main class="main-content">
+                <div class="search-bar">
+                    <input type="text" placeholder="Tìm kiếm khóa học...">
+                    <button>🔍</button>
+                </div>
 
-    <!-- PROFILE SIDEBAR -->
-    <aside class="profile-bar">
-        <div class="profile">
-            <img src="img/user.png" alt="avatar" />
-            <h4>Good Morning Prashant</h4>
-            <p>Continue Your Journey And Achieve Your Target</p>
+                <div class="banner">
+                    <div class="banner-track">
+                        <img src="img/container.png" alt="banner">
+                        <img src="img/container.png" alt="banner">
+                        <img src="img/container.png" alt="banner">
+                    </div>
+                </div>
+
+                <!-- Tiếp tục học - cuộn ngang -->
+                <section class="continue-watching">
+                    <h3>Tiếp tục học</h3>
+                    <div class="courses">
+                        <div class="course-card">
+                            <img src="img/vid1.png" />
+                            <p><strong>Học tiếng Trung dễ dàng</strong></p>
+                            <small>Giảng viên: Prashant Kumar Singh</small>
+                        </div>
+                        <div class="course-card">
+                            <img src="img/vid2.png" />
+                            <p><strong>Học tiếng Trung chuyên nghiệp</strong></p>
+                            <small>Giảng viên: Prashant Kumar Singh</small>
+                        </div>
+                        <div class="course-card">
+                            <img src="img/vid3.png" />
+                            <p><strong>Học tiếng Trung chuyên nghiệp tích hợp AI</strong></p>
+                            <small>Giảng viên: Prashant Kumar Singh</small>
+                        </div>
+                        <div class="course-card">
+                            <img src="img/vid4.png" />
+                            <p><strong>Học tiếng Trung chuyên nghiệp tích hợp AI</strong></p>
+                            <small>Giảng viên: Prashant Kumar Singh</small>
+                        </div>
+                    </div>
+                </section>
+            </main>
         </div>
-        <div class="stats">
-            <img src="img/chart.png" alt="chart" />
-        </div>
-        <div class="mentors">
-            <p>Your Mentor</p>
-            <ul>
-                <li>Prashant Kumar Singh <button>Follow</button></li>
-                <li>Prashant Kumar Singh <button>Follow</button></li>
-                <li>Prashant Kumar Singh <button>Follow</button></li>
-                <li><button class="see-all">See All</button></li>
-            </ul>
-        </div>
-    </aside>
-</div>
-</body>
+    </body>
 </html>
 
